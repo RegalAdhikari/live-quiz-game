@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+     <link rel="stylesheet" href="./src/style.css">
+    <title>Lobby</title>
+</head>
+
+<body>
+    <h1 class="text-blue-600">
+    Hello Tailwind!
+</h1>
+
+<button class="bg-green-500 text-white px-4 py-2 rounded-lg hover:bg-green-600">
+    Click Me
+</button>
+    <input id="lobbyId" placeholder="Lobby ID" />
+    <button onclick="createLobby()">Create</button>
+    <button onclick="joinLobby()">Join</button>
+
+    <ul id="players"></ul>
+
+
+    <script src="http://localhost:3000/socket.io/socket.io.js"></script>
+
+    <script>
+        const socket = io("http://localhost:3000");
+
+        function createLobby() {
+            const id = document.getElementById("lobbyId").value;
+            socket.emit("createLobby", id);
+        }
+
+        function joinLobby() {
+            const id = document.getElementById("lobbyId").value;
+            socket.emit("joinLobby", id);
+        }
+
+        socket.on("updateLobby", (lobby) => {
+            const list = document.getElementById("players");
+            list.innerHTML = "";
+            lobby.players.forEach(p => {
+                const li = document.createElement("li");
+                li.innerText = p;
+                list.appendChild(li);
+            });
+        });
+    </script>
+</body>
+
+</html>
