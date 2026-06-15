@@ -38,7 +38,6 @@ function broadcastLobby(lobbyId) {
 io.on("connection", (socket) => {
     console.log("Connected: " + socket.id);
 
-    // ── Create Lobby ──────────────────────────────────────────────
     socket.on("createLobby", ({ lobbyId, name }) => {
         if (lobbies[lobbyId]) return socket.emit("error", "Lobby already exists");
         lobbies[lobbyId] = {
@@ -54,7 +53,6 @@ io.on("connection", (socket) => {
         broadcastLobby(lobbyId);
     });
 
-    // ── Join Lobby ────────────────────────────────────────────────
     socket.on("joinLobby", ({ lobbyId, name }) => {
         const lobby = getLobby(lobbyId);
         if (!lobby) return socket.emit("error", "Lobby not found");
@@ -65,12 +63,10 @@ io.on("connection", (socket) => {
         broadcastLobby(lobbyId);
     });
 
-    // ── Leave Lobby ───────────────────────────────────────────────
     socket.on("leaveLobby", (lobbyId) => {
         removePLayer(socket.id, lobbyId);
     });
 
-    // ── Start Game ────────────────────────────────────────────────
     socket.on("startGame", ({ lobbyId, totalRounds }) => {
         const lobby = getLobby(lobbyId);
         if (!lobby || lobby.hostId !== socket.id) return;
@@ -83,7 +79,6 @@ io.on("connection", (socket) => {
         broadcastLobby(lobbyId);
     });
 
-    // ── Player Locks In Answer ─────────────────────────────────────
     socket.on("lockAnswer", ({ lobbyId, answer }) => {
         const lobby = getLobby(lobbyId);
         if (!lobby || lobby.phase !== "question") return;
@@ -98,7 +93,6 @@ io.on("connection", (socket) => {
         });
     });
 
-    // ── Host Reveals Answer ────────────────────────────────────────
     socket.on("revealAnswer", ({ lobbyId, correctAnswer }) => {
         const lobby = getLobby(lobbyId);
         if (!lobby || lobby.hostId !== socket.id) return;
@@ -117,7 +111,6 @@ io.on("connection", (socket) => {
         broadcastLobby(lobbyId);
     });
 
-    // ── Host Moves to Next Round ───────────────────────────────────
     socket.on("nextRound", (lobbyId) => {
         const lobby = getLobby(lobbyId);
         if (!lobby || lobby.hostId !== socket.id) return;
@@ -137,7 +130,6 @@ io.on("connection", (socket) => {
         }
     });
 
-    // ── Disconnect ─────────────────────────────────────────────────
     socket.on("disconnect", () => {
         for (const lobbyId in lobbies) {
             removePLayer(socket.id, lobbyId);
